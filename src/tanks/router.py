@@ -3,41 +3,72 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from tanks.schemas import TankAddScheme, TankShowScheme, GunScheme
 from database import get_async_session
-from tanks.queries import get_tank_info, add_new_tank, add_new_gun, get_guns_info as g, update_tank_gun
-from scraping.wot_data_scraper import get_guns_info, get_tanks_info
+from tanks.queries import get_tank_info, get_gun_info, update_tank_gun, get_tanks_name, add_new_tank
 
 router = APIRouter(
     prefix='/api/v1',
-    tags=['tanks']
+    tags=['Tanks from database']
 )
 
 
-@router.get('/gun/list', response_model=dict[str, str | list[list[GunScheme]] | None])
-async def get_all_guns():
-    data = await get_guns_info()
-    return {
-        "status": "success",
-        "data": data,
-        "detail": None
-    }
-
-
-@router.get('/tank/list', response_model=dict[str, str | list[TankAddScheme] | None])
-async def get_all_tanks():
-    data = await get_tanks_info()
-    return {
-        "status": "success",
-        "data": data,
-        "detail": None
-    }
-
-
-@router.post('/guns/add')
-async def add_guns(session: AsyncSession = Depends(get_async_session)):
+@router.get('/tank/list', response_model=dict[str, str | list[TankShowScheme] | None])
+async def get_all_tanks_from_db(session: AsyncSession = Depends(get_async_session)):
+    data = []
+    names = await get_tanks_name(session)
     try:
-        data: list[list[GunScheme]] = await get_guns_info()
-        for item in data:
-            await add_new_gun(item, session)
+        for item in names:
+            data.append(await get_tank_info(item, session))
+    except Exception as e:
+        return {
+            "status": "error",
+            "data": None,
+            "detail": str(e)
+        }
+    return {
+        "status": "success",
+        "data": data,
+        "detail": None
+    }
+
+
+@router.get('/gun/list', response_model=dict[str, str | list[GunScheme] | None])
+async def get_all_guns_from_db(session: AsyncSession = Depends(get_async_session)):
+    try:
+        data = await get_gun_info(session)
+    except Exception as e:
+        return {
+            "status": "error",
+            "data": None,
+            "detail": str(e)
+        }
+    return {
+        "status": "success",
+        "data": data,
+        "detail": None
+    }
+
+
+@router.get('/tank', response_model=dict[str, str | TankShowScheme | None])
+async def get_tank(tank_name: str, session: AsyncSession = Depends(get_async_session)):
+    try:
+        tank = await get_tank_info(tank_name, session)
+    except Exception as e:
+        return {
+            "status": "error",
+            "data": None,
+            "detail": str(e)
+        }
+    return {
+        "status": "success",
+        "data": tank,
+        "detail": None
+    }
+
+
+@router.post('/tank/add')
+async def add_tank(data: TankAddScheme, session: AsyncSession = Depends(get_async_session)):
+    try:
+        await add_new_tank(data, session)
     except Exception as e:
         return {
             "status": "error",
@@ -49,52 +80,6 @@ async def add_guns(session: AsyncSession = Depends(get_async_session)):
         "data": None,
         "detail": None
     }
-
-
-@router.post('/tanks/add')
-async def add_tanks(session: AsyncSession = Depends(get_async_session)):
-    try:
-        data = await get_tanks_info()
-        for item in data:
-            await add_new_tank(item, session)
-    except Exception as e:
-        return {
-            "status": "error",
-            "data": None,
-            "detail": str(e)
-        }
-    return {
-        "status": "success",
-        "data": None,
-        "detail": None
-    }
-
-
-@router.get('/tank/{tank_id}', response_model=dict[str, str | TankShowScheme | None])
-async def get_tank(tank_id: int, session: AsyncSession = Depends(get_async_session)):
-    try:
-        tank = await get_tank_info(tank_id, session)
-        return {
-            "status": "success",
-            "data": tank,
-            "detail": None
-        }
-    except Exception as e:
-        return {
-            "status": "error",
-            "data": None,
-            "detail": str(e)
-        }
-
-
-@router.get("/tank/vision/update/{tank_id}")
-async def update_vision(tank_id: int, session: AsyncSession = Depends(get_async_session)):
-    pass
-
-
-
-
-
 
 
 @router.post('/gun/update/{gun_id}')
@@ -104,5 +89,3 @@ async def update_gun(gun_id: int, data: GunScheme, session: AsyncSession = Depen
         "status": "success",
         "detail": None
     }
-
-

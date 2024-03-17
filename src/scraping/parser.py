@@ -21,7 +21,6 @@ def parse_tank_specification(tank_json: dict):
         level=tank_json['tank']['tier'],
         type=tank_types[tank_json['tank']['type']],
         country=countries[tank_json['tank']['nation']],
-        slug_field=tank_json['tank']['short_name'].lower().replace(" ", "-"),
         specification=SpecificationScheme(
             survival=SurvivalScheme(
                 hp=tank_json['tank']['health'],

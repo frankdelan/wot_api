@@ -1,5 +1,4 @@
-from sqlalchemy import Table, select
-from sqlalchemy_utils import create_view
+from sqlalchemy import Table
 from sqlalchemy import ForeignKey, Column
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 

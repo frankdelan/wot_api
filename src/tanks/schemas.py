@@ -88,9 +88,9 @@ class TankAddScheme(BaseModel):
     level: int = Field(ge=1, le=10)
     country: TankCountryScheme
     type: TankTypeScheme
-    slug_field: str
     specification: SpecificationScheme | None
 
 
 class TankShowScheme(TankAddScheme):
     tank_id: int
+    slug_field: str

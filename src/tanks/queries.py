@@ -7,17 +7,24 @@ from tanks.schemas import TankAddScheme, SurvivalScheme, SpecificationScheme, Fi
     MobilityShowScheme, VisionScheme, StealthScheme, TankShowScheme, GunScheme
 
 
-async def get_tank_info(tank_id: int, session: AsyncSession):
+async def get_tanks_name(session: AsyncSession):
+    query = select(Tank.name)
+    result = await session.execute(query)
+    return result.scalars().all()
+
+
+async def get_tank_info(tank_name: str, session: AsyncSession):
+    tank_slug: str = tank_name.replace(" ", "-").lower()
     query = select(
-        Tank.name, Tank.level, Tank.country, Tank.type,
+        Tank.id, Tank.name, Tank.level, Tank.country, Tank.type, Tank.slug_field,
         Survival.hp, Survival.hull_armor, Survival.tower_armor,
         Mobility.weight, Mobility.power, Mobility.specific_power, Mobility.max_forward_speed,
         Mobility.max_backward_speed, Mobility.rotation_speed, Mobility.tower_rotation_speed,
         Vision.vision_range, Vision.communication_range,
         Stealth.standing_stealth, Stealth.moving_stealth,
-        Gun.id, Gun.name.label('gun_name'), Gun.alpha, Gun.penetration, Gun.shell_type,
-        Gun.reload, Gun.spread, Gun.reduction_time,
-        Gun.dpm, Gun.elevation_vertical_angles, Gun.elevation_horizontal_angles) \
+        Gun.id.label('gun_id'), Gun.name.label('gun_name'), Gun.gun_type, Gun.shell_count, Gun.alpha, Gun.penetration, Gun.shell_type,
+        Gun.reload, Gun.dpm, Gun.inside_reload, Gun.autoreload, Gun.spread, Gun.reduction_time,
+        Gun.elevation_vertical_angles, Gun.elevation_horizontal_angles) \
     .join(
         Specification, Tank.specification_id == Specification.id
     ).join(
@@ -34,54 +41,60 @@ async def get_tank_info(tank_id: int, session: AsyncSession):
         gun_association_table, Firepower.id == gun_association_table.c.firepower_id
     ).join(
         Gun, gun_association_table.c.gun_id == Gun.id
-    ).where(Tank.id == tank_id)
+    ).where(Tank.slug_field == tank_slug)
 
     result = await session.execute(query)
-    tank = result.mappings().first()
-
+    tank = result.mappings().all()
+    if not tank:
+        raise NoResultFound("Танка с таким названием не существует")
     return TankShowScheme(
-        tank_id=tank_id,
-        name=tank['name'],
-        level=tank['level'],
-        country=tank['country'],
-        type=tank['type'],
+        tank_id=tank[0]['id'],
+        name=tank[0]['name'],
+        level=tank[0]['level'],
+        country=tank[0]['country'],
+        type=tank[0]['type'],
+        slug_field=tank[0]['slug_field'],
         specification=SpecificationScheme(
             survival=SurvivalScheme(
-                hp=tank['hp'],
-                hull_armor=tank['hull_armor'],
-                tower_armor=tank['tower_armor'],
+                hp=tank[0]['hp'],
+                hull_armor=tank[0]['hull_armor'],
+                tower_armor=tank[0]['tower_armor'],
             ),
             firepower=FirepowerScheme(
                 tank_guns=[GunScheme(
-                    id=tank['id'],
-                    name=tank['gun_name'],
-                    alpha=tank['alpha'],
-                    penetration=tank['penetration'],
-                    shell_type=tank['shell_type'],
-                    reload=tank['reload'],
-                    spread=tank['spread'],
-                    reduction_time=tank['reduction_time'],
-                    dpm=tank['dpm'],
-                    elevation_vertical_angles=tank['elevation_vertical_angles'],
-                    elevation_horizontal_angles=tank['elevation_horizontal_angles'],
-                )],
+                    id=tank[idx]['gun_id'],
+                    name=tank[idx]['gun_name'],
+                    gun_type=tank[idx]['gun_type'],
+                    shell_count=tank[idx]['shell_count'],
+                    alpha=tank[idx]['alpha'],
+                    penetration=tank[idx]['penetration'],
+                    shell_type=tank[idx]['shell_type'],
+                    reload=tank[idx]['reload'],
+                    dpm=tank[idx]['dpm'],
+                    inside_reload=tank[idx]['inside_reload'],
+                    autoreload=tank[idx]['autoreload'],
+                    spread=tank[idx]['spread'],
+                    reduction_time=tank[idx]['reduction_time'],
+                    elevation_vertical_angles=tank[idx]['elevation_vertical_angles'],
+                    elevation_horizontal_angles=tank[idx]['elevation_horizontal_angles'],
+                ) for idx in range(len(tank))],
             ),
             mobility=MobilityShowScheme(
-                weight=tank['weight'],
-                power=tank['power'],
-                specific_power=tank['specific_power'],
-                max_forward_speed=tank['max_forward_speed'],
-                max_backward_speed=tank['max_backward_speed'],
-                rotation_speed=tank['rotation_speed'],
-                tower_rotation_speed=tank['tower_rotation_speed'],
+                weight=tank[0]['weight'],
+                power=tank[0]['power'],
+                specific_power=tank[0]['specific_power'],
+                max_forward_speed=tank[0]['max_forward_speed'],
+                max_backward_speed=tank[0]['max_backward_speed'],
+                rotation_speed=tank[0]['rotation_speed'],
+                tower_rotation_speed=tank[0]['tower_rotation_speed'],
             ),
             vision=VisionScheme(
-                vision_range=tank['vision_range'],
-                communication_range=tank['communication_range'],
+                vision_range=tank[0]['vision_range'],
+                communication_range=tank[0]['communication_range'],
             ),
             stealth=StealthScheme(
-                standing_stealth=tank['standing_stealth'],
-                moving_stealth=tank['moving_stealth'],
+                standing_stealth=tank[0]['standing_stealth'],
+                moving_stealth=tank[0]['moving_stealth'],
             ),
         )
     )
@@ -93,7 +106,8 @@ async def add_new_tank(data: TankAddScheme, session: AsyncSession):
     stealth = Stealth(**spec_data.stealth.model_dump())
     vision = Vision(**spec_data.vision.model_dump())
     survival = Survival(**spec_data.survival.model_dump())
-    mobility = Mobility(**spec_data.mobility.model_dump())
+    mobility = Mobility(**spec_data.mobility.model_dump(),
+                        specific_power=round(data.specification.mobility.power/data.specification.mobility.weight, 2))
 
     guns_query = select(Gun).where(Gun.id.in_(spec_data.firepower.tank_guns))
     guns = await session.execute(guns_query)
@@ -113,9 +127,9 @@ async def add_new_tank(data: TankAddScheme, session: AsyncSession):
                                   stealth_id=stealth.id)
     session.add(specification)
     await session.flush()
-
+    slug_field = data.name.replace(" ", "-").lower()
     tank = Tank(name=data.name, level=data.level, country=data.country, type=data.type,
-                slug_field=data.slug_field, specification_id=specification.id)
+                slug_field=slug_field, specification_id=specification.id)
     session.add(tank)
     try:
         await session.commit()
@@ -124,7 +138,7 @@ async def add_new_tank(data: TankAddScheme, session: AsyncSession):
         return e
 
 
-async def get_guns_info(session: AsyncSession):
+async def get_gun_info(session: AsyncSession):
     query = select(Gun)
     result = await session.execute(query)
     return result.scalars().all()
@@ -135,7 +149,11 @@ async def add_new_gun(data: list[GunScheme], session: AsyncSession):
         print(item)
         gun = Gun(**item.model_dump())
         session.add(gun)
-    await session.commit()
+    try:
+        await session.commit()
+    except IntegrityError as e:
+        await session.rollback()
+        return e
 
 
 async def update_tank_gun(gun_id: int, data: GunScheme, session: AsyncSession):
