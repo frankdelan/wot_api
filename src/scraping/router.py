@@ -7,7 +7,7 @@ from tanks.queries import add_new_tank, add_new_gun
 from tanks.schemas import GunScheme, TankAddScheme
 
 router = APIRouter(
-    prefix='/api/v2',
+    prefix='/api/v1',
     tags=['Tanks from TANKS.GG API']
 )
 

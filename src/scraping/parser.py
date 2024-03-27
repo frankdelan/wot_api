@@ -60,7 +60,7 @@ def parse_shells(tank_json: dict) -> dict[str, list[str]]:
     shell_info = {'shell_type': [],
                   'penetration': [],
                   'alpha': []}
-    for gun_idx in range(0, len(tank_json['tank']['guns']) + 2, 3):
+    for gun_idx in range(0, len(tank_json['tank']['guns']) * 2 + 1, 3):
         shell_type: str = (shell_types[tank_json['tank']['shells'][gun_idx]['type']] + ' / ' +
                            shell_types[tank_json['tank']['shells'][gun_idx + 1]['type']] + ' / ' +
                            shell_types[tank_json['tank']['shells'][gun_idx + 2]['type']])

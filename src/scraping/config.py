@@ -1,5 +1,5 @@
 LEVEL = 10
-TYPE = 'heavy'
+TYPE = 'td'
 POSTFIX_LIST = ['-test', '-7v7', '7x7', '-7x7', '-cl', '-bb', 'r-']
 TANK_LIST_URI = 'https://tanks.gg/api/list'
 TANK_INFO_URI = 'https://tanks.gg/api/tank'
@@ -16,8 +16,8 @@ countries = {'ussr': 'СССР',
              'sweden': 'Швеция',
              'italy': 'Италия'}
 
-tank_types = {'light': 'Легкий',
-              'medium': 'Средный',
+tank_types = {'light': 'Лёгкий',
+              'medium': 'Средний',
               'heavy': 'Тяжелый',
               'td': 'ПТ-САУ',
               'spg': 'САУ'}

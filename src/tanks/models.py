@@ -103,4 +103,3 @@ class Tank(Base):
     slug_field: Mapped[str] = mapped_column(nullable=False)
     specification_id: Mapped[int] = mapped_column(ForeignKey('specification.id'), nullable=True)
     specification: Mapped[Specification] = relationship(Specification)
-

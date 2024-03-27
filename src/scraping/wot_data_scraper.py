@@ -16,7 +16,8 @@ async def get_tanks_slug() -> list[str]:
     async with ClientSession() as session:
         async with session.get(TANK_LIST_URI) as resp:
             tanks_info: dict = await resp.json()
-            slugs: list[str] = [tank['slug'] for tank in tanks_info['tanks'] if tank['tier'] == LEVEL and tank['type'] == TYPE]
+            slugs: list[str] = [tank['slug'] for tank in tanks_info['tanks'] if tank['tier'] == LEVEL and
+                                                                                tank['type'] == TYPE]
     return slugs
 
 

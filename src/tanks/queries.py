@@ -106,8 +106,7 @@ async def add_new_tank(data: TankAddScheme, session: AsyncSession):
     stealth = Stealth(**spec_data.stealth.model_dump())
     vision = Vision(**spec_data.vision.model_dump())
     survival = Survival(**spec_data.survival.model_dump())
-    mobility = Mobility(**spec_data.mobility.model_dump(),
-                        specific_power=round(data.specification.mobility.power/data.specification.mobility.weight, 2))
+    mobility = Mobility(**spec_data.mobility.model_dump())
 
     guns_query = select(Gun).where(Gun.id.in_(spec_data.firepower.tank_guns))
     guns = await session.execute(guns_query)
@@ -146,7 +145,6 @@ async def get_gun_info(session: AsyncSession):
 
 async def add_new_gun(data: list[GunScheme], session: AsyncSession):
     for item in data:
-        print(item)
         gun = Gun(**item.model_dump())
         session.add(gun)
     try:
