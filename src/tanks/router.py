@@ -3,10 +3,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from tanks.schemas import TankAddScheme, TankShowScheme, GunScheme
 from database import get_async_session
-from tanks.queries import get_tank_info, get_gun_info, update_tank_gun, get_tanks_name, add_new_tank
+from tanks.queries import get_tank_info, get_gun_info, update_tank_gun, get_tanks_name, add_new_tank, add_new_gun, \
+    delete_tank_gun
 
 router = APIRouter(
-    prefix='/api/v1',
+    prefix='/api/v2',
     tags=['Tanks from database']
 )
 
@@ -82,6 +83,23 @@ async def add_tank(data: TankAddScheme, session: AsyncSession = Depends(get_asyn
     }
 
 
+@router.post('/gun/add')
+async def add_gun(data: GunScheme, session: AsyncSession = Depends(get_async_session)):
+    try:
+        await add_new_gun([data], session)
+    except Exception as e:
+        return {
+            "status": "error",
+            "data": None,
+            "detail": str(e)
+        }
+    return {
+        "status": "success",
+        "data": None,
+        "detail": None
+    }
+
+
 @router.post('/gun/update/{gun_id}')
 async def update_gun(gun_id: int, data: GunScheme, session: AsyncSession = Depends(get_async_session)):
     await update_tank_gun(gun_id, data, session)
@@ -89,3 +107,14 @@ async def update_gun(gun_id: int, data: GunScheme, session: AsyncSession = Depen
         "status": "success",
         "detail": None
     }
+
+
+@router.post('/gun/delete/{gun_id}')
+async def delete_gun(gun_id: int, session: AsyncSession = Depends(get_async_session)):
+    await delete_tank_gun(gun_id, session)
+    return {
+        "status": "success",
+        "detail": None
+    }
+
+# TODO: add tank delete

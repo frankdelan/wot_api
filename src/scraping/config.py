@@ -1,5 +1,5 @@
 LEVEL = 10
-TYPE = 'td'
+TYPE = 'heavy'
 POSTFIX_LIST = ['-test', '-7v7', '7x7', '-7x7', '-cl', '-bb', 'r-']
 TANK_LIST_URI = 'https://tanks.gg/api/list'
 TANK_INFO_URI = 'https://tanks.gg/api/tank'

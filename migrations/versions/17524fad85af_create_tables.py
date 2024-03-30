@@ -1,8 +1,8 @@
-"""init tables
+"""create tables
 
-Revision ID: ef0ff669d9be
+Revision ID: 17524fad85af
 Revises: 
-Create Date: 2024-03-17 15:01:31.494055
+Create Date: 2024-03-28 09:50:50.405521
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'ef0ff669d9be'
+revision: str = '17524fad85af'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -40,8 +40,7 @@ def upgrade() -> None:
     sa.Column('dpm', sa.Integer(), nullable=False),
     sa.Column('elevation_vertical_angles', sa.String(), nullable=False),
     sa.Column('elevation_horizontal_angles', sa.Integer(), nullable=False),
-    sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('name')
+    sa.PrimaryKeyConstraint('id')
     )
     op.create_table('mobility',
     sa.Column('id', sa.Integer(), nullable=False),

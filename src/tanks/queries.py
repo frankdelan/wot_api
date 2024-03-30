@@ -1,4 +1,4 @@
-from sqlalchemy import select, update
+from sqlalchemy import select, update, delete
 from sqlalchemy.exc import NoResultFound, IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -156,6 +156,12 @@ async def add_new_gun(data: list[GunScheme], session: AsyncSession):
 
 async def update_tank_gun(gun_id: int, data: GunScheme, session: AsyncSession):
     stmt = update(Gun).where(Gun.id == gun_id).values(**data.model_dump())
+    await session.execute(stmt)
+    await session.commit()
+
+
+async def delete_tank_gun(gun_id: int, session: AsyncSession):
+    stmt = delete(Gun).where(Gun.id == gun_id)
     await session.execute(stmt)
     await session.commit()
 

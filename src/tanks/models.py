@@ -77,19 +77,19 @@ class Specification(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
 
     survival_id: Mapped[int] = mapped_column(ForeignKey('survival.id'))
-    survival: Mapped[Survival] = relationship(Survival)
+    survival: Mapped[Survival] = relationship(Survival, cascade="all, delete")
 
     firepower_id: Mapped[int] = mapped_column(ForeignKey('firepower.id'))
-    firepower: Mapped[Firepower] = relationship(Firepower)
+    firepower: Mapped[Firepower] = relationship(Firepower, cascade="all, delete")
 
     mobility_id: Mapped[int] = mapped_column(ForeignKey('mobility.id'))
-    mobility: Mapped[Mobility] = relationship(Mobility)
+    mobility: Mapped[Mobility] = relationship(Mobility, cascade="all, delete")
 
     vision_id: Mapped[int] = mapped_column(ForeignKey('vision.id'))
-    vision: Mapped[Vision] = relationship(Vision)
+    vision: Mapped[Vision] = relationship(Vision, cascade="all, delete")
 
     stealth_id: Mapped[int] = mapped_column(ForeignKey('stealth.id'))
-    stealth: Mapped[Stealth] = relationship(Stealth)
+    stealth: Mapped[Stealth] = relationship(Stealth, cascade="all, delete")
 
 
 class Tank(Base):
@@ -102,4 +102,4 @@ class Tank(Base):
     type: Mapped[str] = mapped_column(nullable=False)
     slug_field: Mapped[str] = mapped_column(nullable=False)
     specification_id: Mapped[int] = mapped_column(ForeignKey('specification.id'), nullable=True)
-    specification: Mapped[Specification] = relationship(Specification)
+    specification: Mapped[Specification] = relationship(Specification, cascade="all, delete")
