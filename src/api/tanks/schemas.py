@@ -68,6 +68,9 @@ class TankTypeScheme(str, Enum):
     sau: str = 'САУ'
     pt_sau: str = 'ПТ-САУ'
 
+    def __str__(self):
+        return self.value
+
 
 class TankCountryScheme(str, Enum):
     ussr: str = 'СССР'
@@ -81,6 +84,9 @@ class TankCountryScheme(str, Enum):
     czech: str = 'Чехословакия'
     sweden: str = 'Швеция'
     italy: str = 'Италия'
+
+    def __str__(self):
+        return self.value
 
 
 class TankAddScheme(BaseModel):

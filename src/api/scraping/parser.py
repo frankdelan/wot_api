@@ -1,4 +1,4 @@
-from tanks.schemas import SurvivalScheme, SpecificationScheme, FirepowerScheme, \
+from api.tanks.schemas import SurvivalScheme, SpecificationScheme, FirepowerScheme, \
     MobilityShowScheme, VisionScheme, StealthScheme, GunScheme, TankAddScheme
 
 from .config import countries, tank_types, shell_types

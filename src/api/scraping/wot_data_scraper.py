@@ -1,8 +1,8 @@
 import asyncio
 from aiohttp import ClientSession
 
-from scraping.config import TANK_LIST_URI, TYPE, LEVEL, TANK_INFO_URI, POSTFIX_LIST
-from scraping.parser import parse_tank_specification, parse_guns
+from api.scraping.config import TANK_LIST_URI, TYPE, LEVEL, TANK_INFO_URI, POSTFIX_LIST
+from api.scraping.parser import parse_tank_specification, parse_guns
 
 
 async def get_specification_json(url: str):

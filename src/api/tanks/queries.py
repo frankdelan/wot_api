@@ -2,8 +2,8 @@ from sqlalchemy import select, update, delete
 from sqlalchemy.exc import NoResultFound, IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from tanks.models import Tank, Gun, Stealth, Vision, Mobility, Survival, Firepower, Specification, gun_association_table
-from tanks.schemas import TankAddScheme, SurvivalScheme, SpecificationScheme, FirepowerScheme, \
+from api.tanks.models import Tank, Gun, Stealth, Vision, Mobility, Survival, Firepower, Specification, gun_association_table
+from api.tanks.schemas import TankAddScheme, SurvivalScheme, SpecificationScheme, FirepowerScheme, \
     MobilityShowScheme, VisionScheme, StealthScheme, TankShowScheme, GunScheme
 
 

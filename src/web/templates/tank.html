@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <h1>{{tank.name}}</h1>
+    <h2>{{tank.level}}</h2>
+    <h3>{{tank.country}}</h3>
+    <h3>{{tank.type}}</h3>
+
+    <p>Живучесть</p>
+    <ul>
+        <li>{{tank.specification.survival.hp}}</li>
+        <li>{{tank.specification.survival.hull_armor}}</li>
+        <li>{{tank.specification.survival.tower_armor}}</li>
+    </ul>
+
+    <p>Огневая мощь</p>
+
+        {% for item in tank.specification.firepower.tank_guns %}
+    <ul>
+            <li>{{item.name}}</li>
+            <li>{{item.gun_type}}</li>
+            <li>{{item.shell_count}}</li>
+            <li>{{item.alpha}}</li>
+            <li>{{item.penetration}}</li>
+            <li>{{item.shell_type}}</li>
+            <li>{{item.reload}}</li>
+            <li>{{item.dpm}}</li>
+            <li>{{item.inside_reload}}</li>
+            <li>{{item.autoreload}}</li>
+            <li>{{item.spread}}</li>
+            <li>{{item.reduction_time}}</li>
+            <li>{{item.elevation_vertical_angles}}</li>
+            <li>{{item.elevation_horizontal_angles}}</li>
+    </ul>
+        {% endfor %}
+
+    <p>Мобильность</p>
+    <ul>
+        <li>{{tank.specification.mobility.weight}}</li>
+        <li>{{tank.specification.mobility.power}}</li>
+        <li>{{tank.specification.mobility.specific_power}}</li>
+        <li>{{tank.specification.mobility.max_forward_speed}}</li>
+        <li>{{tank.specification.mobility.max_backward_speed}}</li>
+        <li>{{tank.specification.mobility.rotation_speed}}</li>
+        <li>{{tank.specification.mobility.tower_rotation_speed}}</li>
+    </ul>
+
+
+    <p>Наблюдение</p>
+    <ul>
+        <li>{{tank.specification.vision.vision_range}}</li>
+        <li>{{tank.specification.vision.communication_range}}</li>
+    </ul>
+
+    <p>Скрытность</p>
+    <ul>
+        <li>{{tank.specification.stealth.standing_stealth}}</li>
+        <li>{{tank.specification.stealth.moving_stealth}}</li>
+    </ul>
+
+
+</body>
+</html>

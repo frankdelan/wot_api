@@ -2,9 +2,9 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import get_async_session
-from scraping.wot_data_scraper import get_guns_info, get_tanks_info
-from tanks.queries import add_new_tank, add_new_gun
-from tanks.schemas import GunScheme, TankAddScheme
+from api.scraping.wot_data_scraper import get_guns_info, get_tanks_info
+from api.tanks.queries import add_new_tank, add_new_gun
+from api.tanks.schemas import GunScheme, TankAddScheme
 
 router = APIRouter(
     prefix='/api/v1',

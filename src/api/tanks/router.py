@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from tanks.schemas import TankAddScheme, TankShowScheme, GunScheme
+from api.tanks.schemas import TankAddScheme, TankShowScheme, GunScheme
 from database import get_async_session
-from tanks.queries import get_tank_info, get_gun_info, update_tank_gun, get_tanks_name, add_new_tank, add_new_gun, \
+from api.tanks.queries import get_tank_info, get_gun_info, update_tank_gun, get_tanks_name, add_new_tank, add_new_gun, \
     delete_tank_gun
 
 router = APIRouter(
@@ -49,7 +49,7 @@ async def get_all_guns_from_db(session: AsyncSession = Depends(get_async_session
     }
 
 
-@router.get('/tank', response_model=dict[str, str | TankShowScheme | None])
+@router.get('/tank/{tank_name}', response_model=dict[str, str | TankShowScheme | None])
 async def get_tank(tank_name: str, session: AsyncSession = Depends(get_async_session)):
     try:
         tank = await get_tank_info(tank_name, session)

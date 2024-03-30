@@ -11,7 +11,7 @@ sys.path.append(os.path.join(sys.path[0], 'src'))
 
 
 from src.config import DB_USER, DB_HOST, DB_PORT, DB_PASS, DB_NAME
-from src.tanks.models import *
+from api.tanks.models import *
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
