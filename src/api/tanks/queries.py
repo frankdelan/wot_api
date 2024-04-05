@@ -7,6 +7,11 @@ from api.tanks.schemas import TankAddScheme, SurvivalScheme, SpecificationScheme
     MobilityShowScheme, VisionScheme, StealthScheme, TankShowScheme, GunScheme
 
 
+async def get_slug(tank_name: str):
+    tank_slug = tank_name.replace(" ", "-")
+    return tank_slug.replace("/", "").lower()
+
+
 async def get_tanks_name(session: AsyncSession):
     query = select(Tank.name)
     result = await session.execute(query)
@@ -14,7 +19,7 @@ async def get_tanks_name(session: AsyncSession):
 
 
 async def get_tank_info(tank_name: str, session: AsyncSession):
-    tank_slug: str = tank_name.replace(" ", "-").lower()
+    tank_slug: str = await get_slug(tank_name)
     query = select(
         Tank.id, Tank.name, Tank.level, Tank.country, Tank.type, Tank.slug_field,
         Survival.hp, Survival.hull_armor, Survival.tower_armor,
@@ -45,6 +50,7 @@ async def get_tank_info(tank_name: str, session: AsyncSession):
 
     result = await session.execute(query)
     tank = result.mappings().all()
+    print(tank)
     if not tank:
         raise NoResultFound("Танка с таким названием не существует")
     return TankShowScheme(
@@ -126,7 +132,7 @@ async def add_new_tank(data: TankAddScheme, session: AsyncSession):
                                   stealth_id=stealth.id)
     session.add(specification)
     await session.flush()
-    slug_field = data.name.replace(" ", "-").lower()
+    slug_field = await get_slug(data.name)
     tank = Tank(name=data.name, level=data.level, country=data.country, type=data.type,
                 slug_field=slug_field, specification_id=specification.id)
     session.add(tank)

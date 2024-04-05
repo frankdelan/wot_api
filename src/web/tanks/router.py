@@ -12,9 +12,9 @@ templates = Jinja2Templates(directory='web/templates')
 
 @router.get('/list')
 async def get_tanks(request: Request, tanks=Depends(get_all_tanks_from_db)):
-    return templates.TemplateResponse('index.html', {'request': request, 'tanks': tanks['data']})
+    return templates.TemplateResponse('tank_list.html', {'request': request, 'tanks': tanks['data']})
 
 
 @router.get('/{tank_name}')
 async def get_tank_info(request: Request, tank=Depends(get_tank)):
-    return templates.TemplateResponse('tank.html', {'request': request, 'tank': tank['data']})
+    return templates.TemplateResponse('tank_info.html', {'request': request, 'tank': tank['data']})
