@@ -50,7 +50,6 @@ async def get_tank_info(tank_name: str, session: AsyncSession):
 
     result = await session.execute(query)
     tank = result.mappings().all()
-    print(tank)
     if not tank:
         raise NoResultFound("Танка с таким названием не существует")
     return TankShowScheme(
