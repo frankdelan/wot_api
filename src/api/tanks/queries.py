@@ -8,18 +8,17 @@ from api.tanks.schemas import TankAddScheme, SurvivalScheme, SpecificationScheme
 
 
 async def get_slug(tank_name: str):
-    tank_slug = tank_name.replace(" ", "-")
-    return tank_slug.replace("/", "").lower()
+    tank_slug = tank_name.replace("/", "").replace(".", "")
+    return tank_slug.replace(" ", "-").lower()
 
 
-async def get_tanks_name(session: AsyncSession):
-    query = select(Tank.name)
+async def get_tanks_slugs(session: AsyncSession):
+    query = select(Tank.slug_field)
     result = await session.execute(query)
     return result.scalars().all()
 
 
-async def get_tank_info(tank_name: str, session: AsyncSession):
-    tank_slug: str = await get_slug(tank_name)
+async def get_tank_info(tank_slug: str, session: AsyncSession):
     query = select(
         Tank.id, Tank.name, Tank.level, Tank.country, Tank.type, Tank.slug_field,
         Survival.hp, Survival.hull_armor, Survival.tower_armor,

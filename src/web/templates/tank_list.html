@@ -5,45 +5,101 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>List of Tanks</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f2f2f2;
-        }
+    <link href="{{ url_for('static', path='/styles.css') }}" rel="stylesheet">
 
-        ul {
-            list-style: none;
-            padding: 0;
-            margin: 20px;
-        }
-
-        li {
-            margin-bottom: 10px;
-        }
-
-        a {
-            text-decoration: none;
-            color: #333;
-            transition: color 0.3s ease;
-        }
-
-        a:hover {
-            color: #0066cc; /* цвет ссылки при наведении */
-        }
-
-        @media only screen and (max-width: 600px) {
-            ul {
-                margin: 10px;
-            }
-        }
-    </style>
 </head>
 <body>
-<ul>
-    {% for tank in tanks %}
-    <li><a href="/tanks/{{ tank.slug_field }}">{{ tank.name }}</a></li>
+<div class="filter-panel container">
+    <h2>Фильтр</h2>
+    <form id="filter-form" method="get">
+        <div class="filter-part">
+            <label for="nation-select">Нация:</label>
+            <select id="nation-select" name="nation">
+                <option value=""></option>
+                {% set unique_types = [] %}
+                {% for tank in tanks %}
+                    {% if tank.country not in unique_types %}
+                        {% set unique_types = unique_types.append(tank.country) %}
+                        <option value="{{ tank.country }}">{{ tank.country }}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+        </div>
+        <div class="filter-part">
+            <label for="level-select">Уровень:</label>
+            <select id="level-select" name="level">
+                <option value=""></option>
+                {% set unique_types = [] %}
+                {% for tank in tanks %}
+                    {% if tank.level not in unique_types %}
+                        {% set unique_types = unique_types.append(tank.level) %}
+                        <option value="{{ tank.level }}">{{ tank.level }}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+        </div>
+        <div class="filter-part">
+            <label for="type-select">Тип танка:</label>
+            <select id="type-select" name="type">
+                <option value=""></option>
+                {% set unique_types = [] %}
+                {% for tank in tanks %}
+                    {% if tank.type not in unique_types %}
+                        {% set unique_types = unique_types.append(tank.type) %}
+                        <option value="{{ tank.type }}">{{ tank.type }}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit">Применить фильтр</button>
+    </form>
+</div>
+
+{% if "Тяжелый" in tanks_types %}
+<h1 class="tank-category">Тяжелые танки</h1>
+{% endif %}
+
+<ul class="tank-list">
+    {% for tank in filtered_tanks %}
+        {% if tank.type == 'Тяжелый' %}
+        <li class="tank"><a class="tank-link" href="/tanks/{{ tank.slug_field }}">{{ tank.name }}</a></li>
+        {% endif %}
+    {% endfor %}
+</ul>
+
+{% if "Средний" in tanks_types %}
+<h1 class="tank-category">Средние танки</h1>
+{% endif %}
+
+<ul class="tank-list">
+    {% for tank in filtered_tanks %}
+        {% if tank.type == 'Средний' %}
+        <li class="tank"><a class="tank-link" href="/tanks/{{ tank.slug_field }}">{{ tank.name }}</a></li>
+        {% endif %}
+    {% endfor %}
+</ul>
+
+{% if "Лёгкий" in tanks_types %}
+<h1 class="tank-category">Лёгкие танки</h1>
+{% endif %}
+
+<ul class="tank-list">
+    {% for tank in filtered_tanks %}
+        {% if tank.type == 'Лёгкий' %}
+        <li class="tank"><a class="tank-link" href="/tanks/{{ tank.slug_field }}">{{ tank.name }}</a></li>
+        {% endif %}
+    {% endfor %}
+</ul>
+
+{% if "ПТ-САУ" in tanks_types %}
+<h1 class="tank-category">ПТ-САУ</h1>
+{% endif %}
+
+<ul class="tank-list">
+    {% for tank in filtered_tanks %}
+        {% if tank.type == 'ПТ-САУ' %}
+        <li class="tank"><a class="tank-link" href="/tanks/{{ tank.slug_field }}">{{ tank.name }}</a></li>
+        {% endif %}
     {% endfor %}
 </ul>
 </body>
