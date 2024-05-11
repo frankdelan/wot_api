@@ -14,7 +14,7 @@ def calculate_tank_weight(tank_json: dict) -> float:
     return full_weight
 
 
-def parse_tank_specification(tank_json: dict):
+def parse_tank_specification(tank_json: dict) -> TankAddScheme:
     full_weight = calculate_tank_weight(tank_json)
     data = TankAddScheme(
         name=tank_json['tank']['short_name'],
@@ -57,6 +57,7 @@ def parse_tank_specification(tank_json: dict):
 
 
 def parse_shells(tank_json: dict) -> dict[str, list[str]]:
+    """Parse information about shells"""
     shell_info = {'shell_type': [],
                   'penetration': [],
                   'alpha': []}
@@ -78,7 +79,8 @@ def parse_shells(tank_json: dict) -> dict[str, list[str]]:
     return shell_info
 
 
-def parse_guns(tank_json: dict):
+def parse_guns(tank_json: dict) -> list[GunScheme]:
+    """Parse information about guns"""
     shell_info: dict[str, list[str]] = parse_shells(tank_json)
 
     data = [GunScheme(

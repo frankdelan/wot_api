@@ -14,8 +14,8 @@ router = APIRouter(
 
 @router.get('/tank/list', response_model=dict[str, str | list[TankShowScheme] | None])
 async def get_all_tanks_from_db(session: AsyncSession = Depends(get_async_session)):
-    data = []
-    slugs = await get_tanks_slugs(session)
+    data: list[TankShowScheme] = []
+    slugs: list[str] = await get_tanks_slugs(session)
     try:
         for item in slugs:
             data.append(await get_tank_info(item, session))
@@ -35,7 +35,7 @@ async def get_all_tanks_from_db(session: AsyncSession = Depends(get_async_sessio
 @router.get('/gun/list', response_model=dict[str, str | list[GunScheme] | None])
 async def get_all_guns_from_db(session: AsyncSession = Depends(get_async_session)):
     try:
-        data = await get_gun_info(session)
+        data: list[GunScheme] = await get_gun_info(session)
     except Exception as e:
         return {
             "status": "error",
@@ -52,7 +52,7 @@ async def get_all_guns_from_db(session: AsyncSession = Depends(get_async_session
 @router.get('/tank/{tank_slug}', response_model=dict[str, str | TankShowScheme | None])
 async def get_tank(tank_slug: str, session: AsyncSession = Depends(get_async_session)):
     try:
-        tank = await get_tank_info(tank_slug, session)
+        tank: TankShowScheme = await get_tank_info(tank_slug, session)
     except Exception as e:
         return {
             "status": "error",
@@ -116,5 +116,3 @@ async def delete_gun(gun_id: int, session: AsyncSession = Depends(get_async_sess
         "status": "success",
         "detail": None
     }
-
-# TODO: add tank delete

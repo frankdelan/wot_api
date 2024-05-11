@@ -3,9 +3,11 @@ from aiohttp import ClientSession
 
 from api.scraping.config import TANK_LIST_URI, TYPE, LEVEL, TANK_INFO_URI, POSTFIX_LIST
 from api.scraping.parser import parse_tank_specification, parse_guns
+from api.tanks.schemas import TankAddScheme, GunScheme
 
 
 async def get_specification_json(url: str):
+    """Get information about tank from API"""
     async with ClientSession() as session:
         async with session.get(url=url) as response:
             tank_json = await response.json()
@@ -13,6 +15,7 @@ async def get_specification_json(url: str):
 
 
 async def get_tanks_slug() -> list[str]:
+    """Get list of tanks slugs from API"""
     async with ClientSession() as session:
         async with session.get(TANK_LIST_URI) as resp:
             tanks_info: dict = await resp.json()
@@ -22,6 +25,7 @@ async def get_tanks_slug() -> list[str]:
 
 
 def delete_duplicates(postfixes: list[str], slug_list: list[str]) -> list[str]:
+    """Delete tanks with different postfixes"""
     i = 0
     while i < len(slug_list):
         for postfix in postfixes:
@@ -33,7 +37,8 @@ def delete_duplicates(postfixes: list[str], slug_list: list[str]) -> list[str]:
     return slug_list
 
 
-async def get_response():
+async def get_response() -> list[dict]:
+    """Collect all information about tanks from API"""
     slugs: list[str] = await get_tanks_slug()
     slugs = delete_duplicates(POSTFIX_LIST, slugs)
 
@@ -46,21 +51,23 @@ async def get_response():
     tasks = []
     for url in tank_uris:
         tasks.append(asyncio.create_task(get_specification_json(url)))
-    result = await asyncio.gather(*tasks)
+    result: list[dict] = await asyncio.gather(*tasks)
     return result
 
 
-async def get_guns_info():
+async def get_guns_info() -> list[list[GunScheme]]:
+    """Get information about all guns from API"""
     tank_jsons = await get_response()
-    gun_list = []
+    gun_list: list = []
     for item in tank_jsons:
         gun_list.append(parse_guns(item))
     return gun_list
 
 
-async def get_tanks_info():
+async def get_tanks_info() -> list[TankAddScheme]:
+    """Get information about all tanks from API"""
     tank_jsons = await get_response()
-    tank_list = []
+    tank_list: list = []
     for item in tank_jsons:
         tank_list.append(parse_tank_specification(item))
     return tank_list

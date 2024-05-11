@@ -54,7 +54,7 @@ async def add_guns(session: AsyncSession = Depends(get_async_session)):
 @router.post('/tanks/add')
 async def add_tanks(session: AsyncSession = Depends(get_async_session)):
     try:
-        data = await get_tanks_info()
+        data: list[TankAddScheme] = await get_tanks_info()
         for item in data:
             await add_new_tank(item, session)
     except Exception as e:
