@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Request, Depends
 from fastapi.templating import Jinja2Templates
-from api.tanks.router import get_all_tanks_from_db, get_tank
+
+from api.tanks.endpoints.tank import get_all_tanks_from_db, get_tank
 from web.tanks.filter import filter_tanks
 
 router = APIRouter(

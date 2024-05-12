@@ -10,5 +10,5 @@ app = FastAPI()
 app.mount("/web/static", StaticFiles(directory="web/static"), name="static")
 
 app.include_router(tank_db_router)
-app.include_router(tank_api_router)
+# app.include_router(tank_api_router) # for filling the database
 app.include_router(tank_web_router)

@@ -1,10 +1,11 @@
 from api.tanks.schemas import SurvivalScheme, SpecificationScheme, FirepowerScheme, \
     MobilityShowScheme, VisionScheme, StealthScheme, GunScheme, TankAddScheme
 
-from .config import countries, tank_types, shell_types
+from api.scraping.config import countries, tank_types, shell_types
 
 
 def calculate_tank_weight(tank_json: dict) -> float:
+    """Sum of weight of all modules"""
     full_weight = sum([tank_json['tank']['weight'],
                        tank_json['tank']['chassis'][-1]['weight'],
                        tank_json['tank']['turrets'][-1]['weight'],
@@ -15,6 +16,7 @@ def calculate_tank_weight(tank_json: dict) -> float:
 
 
 def parse_tank_specification(tank_json: dict) -> TankAddScheme:
+    """Parse information about tank"""
     full_weight = calculate_tank_weight(tank_json)
     data = TankAddScheme(
         name=tank_json['tank']['short_name'],
